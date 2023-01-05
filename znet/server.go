@@ -23,7 +23,7 @@ var topLine = `┌────────────────────�
 var borderLine = `│`
 var bottomLine = `└──────────────────────────────────────────────────────┘`
 
-//Server 接口实现，定义一个Server服务类
+// Server 接口实现，定义一个Server服务类
 type Server struct {
 	//服务器的名称
 	Name string
@@ -47,10 +47,13 @@ type Server struct {
 	packet ziface.IDataPack
 }
 
-//NewServer 创建一个服务器句柄
+// NewServer 创建一个服务器句柄
+// 初始化服务端对象
+// 因为结构体server实现了IServer的方法，所以应该返回接口IServer
 func NewServer(opts ...Option) ziface.IServer {
 	printLogo()
 
+	//创建一个服务器对象，其地址为s
 	s := &Server{
 		Name:       utils.GlobalObject.Name,
 		IPVersion:  "tcp4",
@@ -69,7 +72,7 @@ func NewServer(opts ...Option) ziface.IServer {
 	return s
 }
 
-//NewServer 创建一个服务器句柄
+// NewServer 创建一个服务器句柄
 func NewUserConfServer(config *utils.Config, opts ...Option) ziface.IServer {
 	//打印logo
 	printLogo()
@@ -96,7 +99,7 @@ func NewUserConfServer(config *utils.Config, opts ...Option) ziface.IServer {
 
 //============== 实现 ziface.IServer 里的全部接口方法 ========
 
-//Start 开启网络服务
+// Start 开启网络服务
 func (s *Server) Start() {
 	fmt.Printf("[START] Server name: %s,listenner at IP: %s, Port %d is starting\n", s.Name, s.IP, s.Port)
 	s.exitChan = make(chan struct{})
@@ -170,7 +173,7 @@ func (s *Server) Start() {
 	}()
 }
 
-//Stop 停止服务
+// Stop 停止服务
 func (s *Server) Stop() {
 	fmt.Println("[STOP] Zinx server , name ", s.Name)
 
@@ -180,7 +183,7 @@ func (s *Server) Stop() {
 	close(s.exitChan)
 }
 
-//Serve 运行服务
+// Serve 运行服务
 func (s *Server) Serve() {
 	s.Start()
 
@@ -190,27 +193,27 @@ func (s *Server) Serve() {
 	select {}
 }
 
-//AddRouter 路由功能：给当前服务注册一个路由业务方法，供客户端链接处理使用
+// AddRouter 路由功能：给当前服务注册一个路由业务方法，供客户端链接处理使用
 func (s *Server) AddRouter(msgID uint32, router ziface.IRouter) {
 	s.msgHandler.AddRouter(msgID, router)
 }
 
-//GetConnMgr 得到链接管理
+// GetConnMgr 得到链接管理
 func (s *Server) GetConnMgr() ziface.IConnManager {
 	return s.ConnMgr
 }
 
-//SetOnConnStart 设置该Server的连接创建时Hook函数
+// SetOnConnStart 设置该Server的连接创建时Hook函数
 func (s *Server) SetOnConnStart(hookFunc func(ziface.IConnection)) {
 	s.OnConnStart = hookFunc
 }
 
-//SetOnConnStop 设置该Server的连接断开时的Hook函数
+// SetOnConnStop 设置该Server的连接断开时的Hook函数
 func (s *Server) SetOnConnStop(hookFunc func(ziface.IConnection)) {
 	s.OnConnStop = hookFunc
 }
 
-//CallOnConnStart 调用连接OnConnStart Hook函数
+// CallOnConnStart 调用连接OnConnStart Hook函数
 func (s *Server) CallOnConnStart(conn ziface.IConnection) {
 	if s.OnConnStart != nil {
 		fmt.Println("---> CallOnConnStart....")
@@ -218,7 +221,7 @@ func (s *Server) CallOnConnStart(conn ziface.IConnection) {
 	}
 }
 
-//CallOnConnStop 调用连接OnConnStop Hook函数
+// CallOnConnStop 调用连接OnConnStop Hook函数
 func (s *Server) CallOnConnStop(conn ziface.IConnection) {
 	if s.OnConnStop != nil {
 		fmt.Println("---> CallOnConnStop....")
